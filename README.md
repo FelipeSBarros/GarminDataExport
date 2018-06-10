@@ -15,4 +15,11 @@ print driver.title
 
 # Useful links:
 * [Installing and config Chrome for Selenium](https://christopher.su/2015/selenium-chromedriver-ubuntu/)  
-*
+[**Consider Chrome Driver latest version**](https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip)
+* https://www.guru99.com/selenium-python.html  
+* http://www.thetaranights.com/login-to-a-website-using-selenium-python-python-selenium-example/  
+
+
+
+
+# Installing Chrome Drive:
