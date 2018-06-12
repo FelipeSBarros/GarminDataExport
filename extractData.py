@@ -1,10 +1,9 @@
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from Infos import GCuser, GCpass
-import urllib.request as urllib2
 from selenium.webdriver.common.keys import Keys
 
-display = Display(visible=0, size=(800, 600))
+display = Display(visible=0, size=(1080, 1920))
 display.start()
 
 browser = webdriver.Chrome()
@@ -27,25 +26,23 @@ browser.find_element_by_id("login-btn-signin").click()
 
 #browser.get('http://connect.garmin.com/proxy/download-service/files/activity/')
 browser.get('https://connect.garmin.com/modern/activities')
-#browser.switch_to_window("main-body")
-browser.find_elements_by_name("export-btn")
-browser.find_elements_by_link_text('#')
-browser.find_elements_by_class_name("logo")
+
 browser.find_elements_by_class_name("filter-container")
+browser.find_elements_by_class_name("manual-activity-btn")
+browser.find_elements_by_class_name("export-btn")
+exprt=browser.find_elements_by_class_name("export-btn")
 
-# trying with urllib
+#exprt[0].send_keys(Keys.TAB) # tab over to not-visible element
+#exprt[0].send_keys(Keys.TAB) # tab over to not-visible element
+exprt[0].send_keys(Keys.RETURN)
+exprt[0].click()
 
-page = urllib2.urlopen(browser)
-from bs4 import BeautifulSoup
-soup = BeautifulSoup(page)
-print(soup.prettify())
-soup.find_all("div")
+for handle in browser.window_handles:
+    print(handle)
 
-#import urllib
-#urllib.urlretrieve('https://connect.garmin.com/modern/activities#')
-browser.get('https://connect.garmin.com/modern/activities#').click()
-#activity = browser.find_element_by_link_text("#")
-browser.find_element_by_id("pageContainer")
+browser.switch_to_window('CDwindow-C2E16168D5EDEB2C227593B2AABC72DB')
+browser.save_screenshot('screenshot.png')
+
 
 
 url_gc_login     = 'https://sso.garmin.com/sso/login?service=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect04&source=https%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.1-min.css&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&usernameShown=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=false'
@@ -58,3 +55,4 @@ url_gc_original_activity = 'http://connect.garmin.com/proxy/download-service/fil
 ## New endpoints
 url_gc_tcx_activity = 'https://connect.garmin.com/modern/proxy/download-service/export/tcx/activity/'
 url_gc_gpx_activity = 'https://connect.garmin.com/modern/proxy/download-service/export/gpx/activity/'
+# https://connect.garmin.com/proxy/activity-search-service-1.0/json/activities? # por JSON
