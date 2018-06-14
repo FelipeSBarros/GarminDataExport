@@ -19,6 +19,10 @@ url_gc_gpx_activity = 'https://connect.garmin.com/modern/proxy/download-service/
 # creating display
 display = Display(visible=0, size=(1080, 1920))
 display.start()
+#options = webdriver.ChromeOptions()
+#options.add_argument("download.default_directory=C:/Downloads")
+
+#driver = webdriver.Chrome(chrome_options=options)
 
 # starting the driver
 browser = webdriver.Chrome()
@@ -45,22 +49,69 @@ assert "Garmin Connect" in browser.title
 
 # Now we are in the activity page, lets donwload the summary:
 # Lets find the "export button" and click on it
-browser.find_element_by_class_name("export-btn").click()
+#browser.find_element_by_class_name("export-btn").click()
 # It is possible to send key "RETURN"...
-browser.find_element_by_class_name("export-btn").send_keys(Keys.RETURN)
+#browser.find_element_by_class_name("export-btn").send_keys(Keys.RETURN)
 
 # now going to each activity
-browser.find_elements_by_class_name("inline-edit-target")
-browser.find_elements_by_partial_link_text('Corrida')
+activities = browser.find_elements_by_class_name("inline-edit-target")
+#browser.find_elements_by_xpath('//a[@href="'+variable+'"]');
+#browser.find_elements_by_partial_link_text('Corrida')
 print( "Total Activities: " + str(len(activities)))
-#browser.find_element_by_class_name("inline-edit-target").click()
-inside = activities[0].click()
+
+from time import sleep
 for a in range(0, len(activities)):
-    if not activities[a]=='':
+    if not activities[a].text:
+        print("OK")
+        #pass
+    else:
+        print(a)
         print(activities[a].text)
+        # Doing this we go to activitie page
+        activities[a].click()
+        sleep(5)
+        gear = browser.find_element_by_class_name("icon-gear")
+        gear.click()
+        sleep(5)
+        browser.save_screenshot('screenshot.png')
+        #gpx = browser.find_element_by_id("btn-export-gpx")
+        #gpx.text
+        #gpx.click()
+        #sleep(20)
+        browser.back()
+        sleep(5)
+
 
 activities[0].text
-activities[0].text.isspace()
+#activities[0].text.isspace()
+
+browser.back()
+
+# Doing this we go to activitie page
+activities[27].click()
+browser.save_screenshot('screenshot.png')
+
+browser.current_url
+
+gear = browser.find_element_by_class_name("icon-gear")
+gear.click()
+browser.save_screenshot('screenshot.png')
+
+gpx = browser.find_element_by_id("btn-export-gpx")
+gpx.text
+gpx.click()
+
+
+# Experiments
+
+#tryng to get href
+#activities[27].text
+#act_id = activities[27].get_attribute('href')
+#act_id = act_id.split("/")[len(act_id.split("/"))-1]
+#import urllib.request
+# Download the file from `url` and save it locally under `file_name`:
+#down = 'https://connect.garmin.com/modern/proxy/download-service/export/gpx/activity/2662026807'
+#urllib.request.urlretrieve(down, './2662026807.gpx')
 
 # About windows
 #for handle in browser.window_handles:
