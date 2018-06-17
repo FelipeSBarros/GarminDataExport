@@ -7,6 +7,7 @@ import psycopg2 # To work with PostGIS
 # from selenium.webdriver.common.keys import Keys # to send keys on navigation. Not used so far.
 
 # Few importante links
+"""
 url_gc_login = 'https://sso.garmin.com/sso/login?service=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect04&source=https%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.1-min.css&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&usernameShown=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=false'
 url_gc_post_auth = 'https://connect.garmin.com/post-auth/login?'
 url_gc_search = 'http://connect.garmin.com/proxy/activity-search-service-1.0/json/activities?'
@@ -18,7 +19,7 @@ url_gc_original_activity = 'http://connect.garmin.com/proxy/download-service/fil
 url_gc_tcx_activity = 'https://connect.garmin.com/modern/proxy/download-service/export/tcx/activity/'
 url_gc_gpx_activity = 'https://connect.garmin.com/modern/proxy/download-service/export/gpx/activity/'
 # https://connect.garmin.com/proxy/activity-search-service-1.0/json/activities? # por JSON
-
+"""
 # creating display
 display = Display(visible=0, size=(1080, 1920))
 display.start()
@@ -87,14 +88,14 @@ try:
 except:
     print("I am unable to connect to the database.")
 
-cur.execute("CREATE TABLE activitiesid (id serial PRIMARY KEY, garmin_id text);")
+cur.execute("CREATE TABLE IF NOT EXISTS activitiesid (id serial PRIMARY KEY, garmin_id text);")
 
 
 for id in ids:
     # id = ids[1]
     cur.execute("INSERT INTO activitiesid (garmin_id) VALUES (%s)", [id])
 
-
+# https://stackoverflow.com/questions/11328940/check-if-list-item-contains-items-from-another-list#11329522
 conn.commit()
 cur.close()
 conn.close()
@@ -108,12 +109,21 @@ class DBHelper:
 
 def get_garmin_id():
     stmt = "SELECT garmin_id FROM activitiesid"
-    return [x[0] for x in cur.execute(stmt)]
+    cur.execute(stmt)
+    return [x[0] for x in cur.fetchall()]
 
 cur.execute(stmt)
-l=cur.fetchall()
-l[0][0]
+saved_ids =
+
 saved_ids = get_garmin_id()
+id=saved_ids[1]
+id in saved_ids
+
+id=[]
+id.append(saved_ids[6])
+id.append(saved_ids[-1])
+id
+id in saved_ids
 
 from time import sleep
 for a in range(0, len(activities)):
