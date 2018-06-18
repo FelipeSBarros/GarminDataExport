@@ -1,4 +1,8 @@
+from osgeo import ogr
+from glob import glob
+import os
 import psycopg2
+from Infos import databaseServer, databaseName, databaseUser, databasePW
 
 class DBManagement:
     def __init__(self, dbname="gastos.sqlite"):
@@ -10,26 +14,28 @@ class DBManagement:
         cur.execute(stmt)
         return [x[0] for x in cur.fetchall()]
 
-    def gpxImport(Activitywd = None):
-        from osgeo import ogr
-        from glob import glob
+    def gpxImport(Activitywd = None, databaseServer, databaseName, databaseUser, databasePW):
+
+        # Setting up connection
+        connString = "PG: host=%s dbname=%s user=%s password=%s" % (databaseServer, databaseName, databaseUser, databasePW)
 
         # Establish a connection to a PostGIS database
         pg = ogr.GetDriverByName('PostgreSQL')
         if pg is None:
             raise RuntimeError('PostgreSQL driver not available')
-        conn = pg.Open("PG:dbname='GarminTest' user='postgres' host='localhost' password='postgres'", True)
+        conn = pg.Open(connString)
         if conn is None:
             raise RuntimeError('Cannot open dataset connection')
 
         # Loop through each GPX file
         for gpx_file in glob(Activitywd + '/*.gpx'):
-            print(gpx_file)
+            print("Loading " + gpx_file)
             ds = ogr.Open(gpx_file)
             if ds is None:
                 print('Skipping ' + gpx_file)
             print('Opened ' + gpx_file)
             prefix = os.path.splitext(os.path.basename(gpx_file))[0]
+            print(prefix)
             # Get each layer
             for iLayer in range(ds.GetLayerCount()):
                 layer = ds.GetLayer(iLayer)
