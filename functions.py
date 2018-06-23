@@ -5,7 +5,7 @@ import psycopg2
 from Infos import databaseServer, databaseName, databaseUser, databasePW
 
 class DBManagement:
-    def __init__(self, dbname="gastos.sqlite"):
+    def __init__(self, dbname="GarminTest"):
         self.dbname = dbname
         self.conn = sqlite3.connect(dbname)
 
@@ -45,6 +45,10 @@ class DBManagement:
                     print(' -> Skipping ' + layer_name + ' since it is empty')
                 else:
                     print(' -> Copying ' + layer_name)
-                    pg_layer = conn.CopyLayer(layer, layer_name)
-                    if pg_layer is None:
-                        print(' |-> Failed to copy')
+                    if conn.GetLayerByName(layer_name) == None:
+                        pg_layer = conn.CopyLayer(layer, layer_name)
+                        if pg_layer is None:
+                            print(' |-> Failed to copy')
+                    else:
+                        pg_layer = conn.CreateFeature(layer, layer_name)
+                        print("Must insert append function")
