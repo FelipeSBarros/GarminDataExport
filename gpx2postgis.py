@@ -73,12 +73,15 @@ def importGPX(gpxFile, gpxLayerFilter, pgConn):
         print ("  Importing {0}:  {1} features".format(sourceLayer.GetName(), sourceLayer.GetFeatureCount()))
         time.sleep(1) 
         fName = os.path.basename(gpxFile)
+        idGarmin = gpxFile.split("_")[-1]
+        idGarmin = idGarmin.split(".")[0]
         destinationLayer.StartTransaction()
         for x in range(sourceLayer.GetFeatureCount()):
             sourceFeature = sourceLayer.GetNextFeature()
             print ("inserting record")
             sourceFeature.SetFID(-1)
             sourceFeature.SetField("src", fName)
+            sourceFeature.SetField("name", idGarmin)
             destinationLayer.CreateFeature(sourceFeature)
 
         #Commit the new features to the database
