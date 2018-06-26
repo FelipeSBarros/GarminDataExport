@@ -4,7 +4,7 @@ from Infos import GCuser, GCpass
 import os
 import psycopg2 # To work with PostGIS
 
-# from selenium.webdriver.common.keys import Keys # to send keys on navigation. Not used so far.
+from selenium.webdriver.common.keys import Keys # to send keys on navigation. Not used so far.
 
 # Few importante links
 """
@@ -25,7 +25,7 @@ display = Display(visible=0, size=(1080, 1920))
 display.start()
 
 # Configuring web driver
-options = webdriver.ChromeOptions()
+# options = webdriver.ChromeOptions()
 # Defining the download folder
 Activitywd = "Activities"
 # Creating folder if not exists
@@ -34,7 +34,7 @@ if not os.path.exists(Activitywd):
 # Altering doanload options to desired folder
 options.add_argument("download.default_directory="+Activitywd)
 # starting the driver
-browser = webdriver.Chrome(chrome_options=options)
+browser = webdriver.Chrome()
 
 # Getting login page with the driver
 browser.get('https://sso.garmin.com/sso/login?service=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect04&source=https%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.1-min.css&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&usernameShown=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=false')
@@ -64,21 +64,42 @@ assert "Garmin Connect" in browser.title
 #browser.find_element_by_class_name("export-btn").send_keys(Keys.RETURN)
 
 # now going to each activity
+browser.save_screenshot("screen1.png")
+
+from selenium.webdriver.common.action_chains import ActionChains
+body = browser.find_element_by_xpath('/html/body')
+body.click() # rodei varias vezes ate chegar no maximo de activities
+ActionChains(browser).send_keys(Keys.PAGE_DOWN).perform()# rodei varias vezes ate chegar no maximo de activities
+browser.save_screenshot("screen2.png")
+
+
 activities = browser.find_elements_by_class_name("inline-edit-target ")
+act = browser.find_elements_by_class_name("inline-edit-target ")
+len(activities)
 #browser.find_elements_by_xpath('//a[@href="'+variable+'"]');
 #browser.find_elements_by_partial_link_text('Corrida')
 
 # Removing wrong activities and getting ID from rihgt activities
 ids = []
-for a in activities:
+remove_id = []
+
+len(act)
+len(activities)
+for a in act:
+    # print(a)
     # a=activities[0]
     # a.text
     # a.get_attribute('href')
     if not a.text:
         activities.remove(a)
+    elif a.get_attribute("href") is None:
+        activities.remove(a)
     else:
         ids.append(a.get_attribute('href').split("/")[-1])
 
+len(ids)
+len(activities)
+len(act)
 print( "Total Activities: " + str(len(activities)))
 
 #Connection configuration to PostgreSQL/GIS database
@@ -128,24 +149,34 @@ id in saved_ids
 from time import sleep
 for a in range(0, len(activities)):
     if not activities[a].text:
-        print("OK")
+        print("pass")
         #pass
     else:
         print(a)
         print(activities[a].text)
         # Doing this we go to activitie page
-        activities[a].click()
-        sleep(5)
-        gear = browser.find_element_by_class_name("icon-gear")
-        gear.click()
-        sleep(5)
-        browser.save_screenshot('screenshot.png')
-        #gpx = browser.find_element_by_id("btn-export-gpx")
-        #gpx.text
-        #gpx.click()
-        #sleep(20)
-        browser.back()
-        sleep(5)
+        try:
+            activities[a].click()
+            sleep(5)
+            gear = browser.find_element_by_class_name("icon-gear")
+            sleep(5)
+            gear.click()
+            sleep(10)
+            print(activities[a].text)
+            print("DONE")
+            sleep(5)
+            #browser.save_screenshot('screenshot.png')
+            gpx = browser.find_element_by_id("btn-export-gpx")
+            sleep(5)
+            #gpx.text
+            gpx.click()
+            sleep(5)
+            browser.back()
+            sleep(5)
+        except:
+            print("Não DEU")
+        finally:
+            print("FIM")
 
 
 activities[0].text
