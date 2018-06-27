@@ -121,7 +121,6 @@ while keep:
             print("pass")
             #pass
         else:
-            print(a)
             print(activities[a].text)
             # Doing this we go to activitie page
             #try:
@@ -129,39 +128,40 @@ while keep:
             sleep(5)
 
     gear = browser.find_element_by_class_name("icon-gear")
-    sleep(5)
+    sleep(2)
     gear.click()
-    sleep(5)
+    sleep(2)
     #browser.save_screenshot('screenshot.png')
     print("Getting CSV")
     csv = browser.find_element_by_id("btn-export-csv")
-    sleep(5)
+    sleep(2)
     csv.text
     csv.click()
     print("Is there a map?")
-    sleep(5)
+    sleep(2)
     map = browser.find_element_by_id("activityMapViewPlaceholder")
-    sleep(5)
+    sleep(2)
     map.text
     # map.click()
     if map.text:
-        print(a)
         gear = browser.find_element_by_class_name("icon-gear")
-        sleep(5)
+        sleep(2)
         gear.click()
-        sleep(5)
+        sleep(2)
         gpx = browser.find_element_by_id("btn-export-gpx")
-        sleep(5)
+        sleep(2)
         gpx.text
         gpx.click()
-        sleep(5)
+        sleep(2)
 
     print("Going to next")
     browser.find_element_by_class_name("page-previous").click()
-    sleep(5)
+    sleep(2)
     nxtid = browser.current_url.split("/")[-1]
+    sleep(2)
     if nxtid in saved_ids:
-        kepp = False
+        keep = False
+        sleep(1)
         #except:
         #print("Não DEU")
 
