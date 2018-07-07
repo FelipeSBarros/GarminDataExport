@@ -59,7 +59,7 @@ def importGPX(gpxFile, gpxLayerFilter, pgConn):
 
         lyrDefn = sourceLayer.GetLayerDefn()
         for i in range( lyrDefn.GetFieldCount() ):
-            print ("Creating field: {0}".format(lyrDefn.GetFieldDefn( i ).GetName()))
+            print("Creating field: {0}".format(lyrDefn.GetFieldDefn( i ).GetName()))
             time.sleep(1) 
             fieldName = lyrDefn.GetFieldDefn( i ).GetName()
             fieldType = lyrDefn.GetFieldDefn( i ).GetType()
@@ -69,8 +69,8 @@ def importGPX(gpxFile, gpxLayerFilter, pgConn):
     def ogrAppendFeatures(gpxFile, sourceLayer, destinationLayer):
         """Append GPX features to existing table based on feature type"""
 
-        print ("Starting transaction for: {0}".format(destinationLayer.GetName()))
-        print ("  Importing {0}:  {1} features".format(sourceLayer.GetName(), sourceLayer.GetFeatureCount()))
+        print("Starting transaction for: {0}".format(destinationLayer.GetName()))
+        print("  Importing {0}:  {1} features".format(sourceLayer.GetName(), sourceLayer.GetFeatureCount()))
         time.sleep(1) 
         fName = os.path.basename(gpxFile)
         idGarmin = gpxFile.split("_")[-1]
@@ -78,19 +78,19 @@ def importGPX(gpxFile, gpxLayerFilter, pgConn):
         destinationLayer.StartTransaction()
         for x in range(sourceLayer.GetFeatureCount()):
             sourceFeature = sourceLayer.GetNextFeature()
-            print ("inserting record")
+            print("inserting record")
             sourceFeature.SetFID(-1)
             sourceFeature.SetField("src", fName)
             sourceFeature.SetField("name", idGarmin)
             destinationLayer.CreateFeature(sourceFeature)
 
         #Commit the new features to the database
-        print ("    Committing transaction for: {0}".format(destinationLayer.GetName()))
+        print("    Committing transaction for: {0}".format(destinationLayer.GetName()))
         time.sleep(1) 
         destinationLayer.CommitTransaction()
 
     # Establish a connection to a GPX file
-    print ("Reading {0}".format(gpxFile))
+    print("Reading {0}".format(gpxFile))
     time.sleep(1) 
     try:
         datasource = ogr.Open(gpxFile)
@@ -99,12 +99,12 @@ def importGPX(gpxFile, gpxLayerFilter, pgConn):
             return None
 
         for i in range(datasource.GetLayerCount()):
-            print (datasource.GetLayer(i).GetName()," :", datasource.GetLayer(i).GetFeatureCount())
+            print(datasource.GetLayer(i).GetName()," :", datasource.GetLayer(i).GetFeatureCount())
 
             if datasource.GetLayer(i).GetName() not in gpxLayerFilter:
-                print ("  Skipping {0}:  User filtered".format(datasource.GetLayer(i).GetName()))
+                print("  Skipping {0}:  User filtered".format(datasource.GetLayer(i).GetName()))
             elif datasource.GetLayer(i).GetFeatureCount() == 0:
-                print ("  Skipping {0}:  0 features".format(datasource.GetLayer(i).GetName()))
+                print("  Skipping {0}:  0 features".format(datasource.GetLayer(i).GetName()))
             else:
                 inLayer = datasource.GetLayer(i)
                 outLayer = "{0}.{1}".format(dbSchema, inLayer.GetName())
@@ -117,14 +117,14 @@ def importGPX(gpxFile, gpxLayerFilter, pgConn):
                 ogrAppendFeatures(gpxFile, inLayer,pgConn.GetLayerByName(outLayer))
         del datasource
     except Exception as e:
-        print (e.args)
+        print(e.args)
 
 def main(dbFormat=dbFormat, dbHost=databaseServer, dbName=databaseName, dbSchema=dbSchema, dbUser=databaseUser, dbPWD=databasePW):
     """Import a list of GPX files in a folder, and import them into PostGIS"""
 
     #Create a list of all files that have the GPX file format
     fileList = glob.glob(os.path.join(inFolder,"*.{0}".format(inFormat)))
-    print ("aqui",fileList)
+    print("aqui",fileList)
     time.sleep(2)
     #Create a connection to PostGIS database
     pgConn = createPostgisConnection(dbFormat, dbHost, dbName, dbSchema, dbUser, dbPWD)
