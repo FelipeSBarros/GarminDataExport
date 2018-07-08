@@ -1,12 +1,10 @@
-#from Infos import databaseServer, databaseName, databaseUser, databasePW
-#import psycopg2
+from Infos import databaseServer, databaseName, databaseUser, databasePW
 import sqlalchemy
-databaseUser = 'federer'
-databasePW = 'grandestslam'
-databaseName = 'tennis'
-databaseServer='localhost'
-port = 5432
-def connect(databaseUser, databasePW, databaseName, databaseServer, port):
+import geoalchemy2
+import os, glob
+import pandas as pd
+
+def connect(databaseUser, databasePW, databaseName, databaseServer, port = 5432):
     '''Returns a connection and a metadata object'''
     # We connect with the help of the PostgreSQL URL
     # postgresql://federer:grandestslam@localhost:5432/tennis
@@ -21,133 +19,91 @@ def connect(databaseUser, databasePW, databaseName, databaseServer, port):
 
     return con, meta
 
-# using function created above to connect to postgre
-con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port)
+def createPartialsTable(con, meta):
+    """Create partials and summery table"""
+    partials = Table('partials', meta,
+                     Column('idGarmin', String),
+                     Column('Divisão', String),
+                     Column('Hora', Time()),
+                     Column('Moving Time', String),
+                     Column('Distância', Float(2)),
+                     Column('Elevation Gain', Integer),
+                     Column('Perda da elevação', Integer),
+                     Column('Ritmo médio', Time()),
+                     Column('Ritmo médio de movimento', String),
+                     Column('Melhor ritmo', Time()),
+                     Column('Cadência de corrida média', Float(4)),
+                     Column('Cadência de corrida máxima', Float(2)),
+                     Column('Comprimento médio da passada', String),
+                     Column('Frequência cardíaca média', String),
+                     Column('FC máxima', String),
+                     Column('Temperatura média', String),
+                     Column('Calorias', String)
+                     )
 
-#Creating table
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, Float
+    summary = Table('summary', meta,
+                    Column('idGarmin', String),
+                    Column('Divisão', String),
+                    Column('Hora', Time()),
+                    Column('Moving Time', String),
+                    Column('Distância', Float(2)),
+                    Column('Elevation Gain', Integer),
+                    Column('Perda da elevação', Integer),
+                    Column('Ritmo médio', Time()),
+                    Column('Ritmo médio de movimento', String),
+                    Column('Melhor ritmo', Time()),
+                    Column('Cadência de corrida média', Float(4)),
+                    Column('Cadência de corrida máxima', Float(2)),
+                    Column('Comprimento médio da passada', String),
+                    Column('Frequência cardíaca média', String),
+                    Column('FC máxima', String),
+                    Column('Temperatura média', String),
+                    Column('Calorias', String)
+                    )
+    # Creating partial table
+    meta.create_all(con)
 
+def csv2pg(inFolder, inFormat, databaseUser, databasePW, databaseName, databaseServer):
+    '''Import csv from folder to PGSQL'''
+    print("connecting with {} database...".format(databaseName))
+    con, meta = connect(databaseUser, databasePW, databaseName, databaseServer)
 
-slams = Table('slams', meta,
-    Column('name', String, primary_key=True),
-    Column('country', String)
-)
+    # Testing if tables already exists
+    if not ('partials' in meta.tables and 'summary' in meta.tables):
+        print('Tables: {0}, {1} does not exists... creating them!'.format('summary', 'partials'))
+        createPartialsTable(con, meta)
+    else:
+        print('No need to create table...')
 
-results = Table('results', meta,
-    Column('slam', String, ForeignKey('slams.name')),
-    Column('year', Integer),
-    Column('result', String)
-)
+    # Creating file list
+    fileList = glob.glob(os.path.join(inFolder, "*.{0}".format(inFormat)))
+    print("processing {} CSV files".format(len(fileList)))
+    for f in fileList:
+        # f = fileList[0]
+        print(f)
+        data = pd.read_csv(f)
+        id = f.split('_')[-1]
+        id = id.split(".")[0]
+        data["idGarmin"] = id
+        summaryData = data[-1:]
+        data = data.drop(data[-1:].index)
 
-# Create the above tables
-meta.create_all(con)
+        # Converting to dictionary
+        data = data.to_dict(orient='records')
+        summaryData = summaryData.to_dict(orient='records')
 
-for table in meta.tables:
-    print(table)
+        # Inserting data!
+        con.execute(partials.insert(), data)
+        con.execute(summary.insert(), summaryData)
 
-# Insert data
-clause = slams.insert().values(name='Wimbledon', country='United Kingdom')
-con.execute(clause)
+    print("All done!")
 
-clause = slams.insert().values(name='Roland Garros', country='France')
-
-result = con.execute(clause)
-
-result.inserted_primary_key
-
-
-victories = [
-    {'slam': 'Wimbledon', 'year': 2003, 'result': 'W'},
-    {'slam': 'Wimbledon', 'year': 2004, 'result': 'W'},
-    {'slam': 'Wimbledon', 'year': 2005, 'result': 'W'}
-]
-con.execute(meta.tables['results'].insert(), victories)
-#victories[0].keys()
-
-# Selecting
-for row in con.execute(results.select()):
-    print(row)
-
-clause = results.select().where(results.c.year == 2005)
-for row in con.execute(clause):
-    print(row)
-
-#Experiments
-
-
-# using function created above to connect to postgre
-con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port)
-
-
-
-# Creating partial table
-partials = Table('partials', meta,
-                 Column('idGarmin', String),
-                 Column('Divisão', String),
-                 Column('Hora', Time()),
-                 Column('Moving Time', Time()),
-                 Column('Distância', Float(2)),
-                 Column('Elevation Gain', Integer),
-                 Column('Perda da elevação', Integer),
-                 Column('Ritmo médio', Time()),
-                 Column('Ritmo médio de movimento', Time()),
-                 Column('Melhor ritmo', Time()),
-                 Column('Cadência de corrida média', Float(4)),
-                 Column('Cadência de corrida máxima', Float(2)),
-                 Column('Comprimento médio da passada', String),
-                 Column('Frequência cardíaca média', String),
-                 Column('FC máxima', String),
-                 Column('Temperatura média', Float(2)),
-                 Column('Calorias', String)
-                 )
-
-summary = Table('summary', meta,
-                 Column('idGarmin', String),
-                 Column('Divisão', String),
-                 Column('Hora', Time()),
-                 Column('Moving Time', Time()),
-                 Column('Distância', Float(2)),
-                 Column('Elevation Gain', Integer),
-                 Column('Perda da elevação', Integer),
-                 Column('Ritmo médio', Time()),
-                 Column('Ritmo médio de movimento', Time()),
-                 Column('Melhor ritmo', Time()),
-                 Column('Cadência de corrida média', Float(4)),
-                 Column('Cadência de corrida máxima', Float(2)),
-                 Column('Comprimento médio da passada', String),
-                 Column('Frequência cardíaca média', String),
-                 Column('FC máxima', String),
-                 Column('Temperatura média', Float(2)),
-                 Column('Calorias', String)
-                 )
-
-meta.create_all(con)
-
-for table in meta.tables:
-    print(table)
-
-# Inserting
-
-# clause = partials.insert().values(idGarmin='Wimbledon', Hora='00:11:31.00')
-#con.execute(clause)
 
 # https://stackoverflow.com/questions/31997859/bulk-insert-a-pandas-dataframe-using-sqlalchemy
-csv_file_path = '/media/felipe/DATA/Repos/GarminProj/Activities/activity_2747046691.csv'
-import pandas as pd
-data = pd.read_csv(csv_file_path)
-id = csv_file_path.split('_')[-1]
-id = id.split(".")[0]
-data["idGarmin"] = id
-summaryData = data[-1:]
-#data.drop(data[data.Divisão == "Summary"].index)
-data = data.drop(data[-1:].index)
-# INSERIR idGARMIN
-data = data.to_dict(orient='records')
-summaryData = summaryData.to_dict(orient='records')
-data[0].keys()
-con.execute(partials.insert(), data)
-con.execute(summary.insert(), summaryData)
+#csv_file_path = '/media/felipe/DATA/Repos/GarminProj/Activities/activity_2747046691.csv'
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities'
+inFormat = "csv"
 
-#session.commit()
-
-#session.close()
+# summary.drop(con)
+# partials.drop(con)
+csv2pg(inFolder, inFormat, databaseUser, databasePW, databaseName, databaseServer)
