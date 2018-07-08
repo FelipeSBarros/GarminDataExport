@@ -1,5 +1,5 @@
-from Infos import databaseServer, databaseName, databaseUser, databasePW
-import psycopg2
+#from Infos import databaseServer, databaseName, databaseUser, databasePW
+#import psycopg2
 import sqlalchemy
 databaseUser = 'federer'
 databasePW = 'grandestslam'
@@ -25,7 +25,7 @@ def connect(databaseUser, databasePW, databaseName, databaseServer, port):
 con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port)
 
 #Creating table
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, Float
 
 
 slams = Table('slams', meta,
@@ -62,6 +62,7 @@ victories = [
     {'slam': 'Wimbledon', 'year': 2005, 'result': 'W'}
 ]
 con.execute(meta.tables['results'].insert(), victories)
+#victories[0].keys()
 
 # Selecting
 for row in con.execute(results.select()):
@@ -73,25 +74,51 @@ for row in con.execute(clause):
 
 #Experiments
 
+
+# using function created above to connect to postgre
+con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port)
+
+
+
 # Creating partial table
-partials = Table('partials2', meta,
-                 Column('idGarmin', String, primary_key = True),
-                 Column('Divisao', String),
+partials = Table('partials', meta,
+                 Column('idGarmin', String),
+                 Column('Divisão', String),
                  Column('Hora', Time()),
-                 Column('MovingTime', Time()),
-                 Column('Distance', float(2)),
-                 Column('ElevationGain', Integer),
-                 Column('ElevationLoss', Integer),
-                 Column('MeanPace', Time()),
-                 Column('MeanPaceMoving', Time()),
-                 Column('BestPace', Time()),
-                 Column('Cadence', float(4)),
-                 Column('MaxCadence', float(2)),
-                 Column('MeanStepLength', String),
-                 Column('MeanHR', String),
-                 Column('MaxHR', String),
-                 Column('MeanTemp', float(2)),
-                 Column('Cal', String)
+                 Column('Moving Time', Time()),
+                 Column('Distância', Float(2)),
+                 Column('Elevation Gain', Integer),
+                 Column('Perda da elevação', Integer),
+                 Column('Ritmo médio', Time()),
+                 Column('Ritmo médio de movimento', Time()),
+                 Column('Melhor ritmo', Time()),
+                 Column('Cadência de corrida média', Float(4)),
+                 Column('Cadência de corrida máxima', Float(2)),
+                 Column('Comprimento médio da passada', String),
+                 Column('Frequência cardíaca média', String),
+                 Column('FC máxima', String),
+                 Column('Temperatura média', Float(2)),
+                 Column('Calorias', String)
+                 )
+
+summary = Table('summary', meta,
+                 Column('idGarmin', String),
+                 Column('Divisão', String),
+                 Column('Hora', Time()),
+                 Column('Moving Time', Time()),
+                 Column('Distância', Float(2)),
+                 Column('Elevation Gain', Integer),
+                 Column('Perda da elevação', Integer),
+                 Column('Ritmo médio', Time()),
+                 Column('Ritmo médio de movimento', Time()),
+                 Column('Melhor ritmo', Time()),
+                 Column('Cadência de corrida média', Float(4)),
+                 Column('Cadência de corrida máxima', Float(2)),
+                 Column('Comprimento médio da passada', String),
+                 Column('Frequência cardíaca média', String),
+                 Column('FC máxima', String),
+                 Column('Temperatura média', Float(2)),
+                 Column('Calorias', String)
                  )
 
 meta.create_all(con)
@@ -101,19 +128,26 @@ for table in meta.tables:
 
 # Inserting
 
-clause = partials.insert().values(idGarmin='Wimbledon', Hora='00:11:31.00')
-con.execute(clause)
-
+# clause = partials.insert().values(idGarmin='Wimbledon', Hora='00:11:31.00')
+#con.execute(clause)
 
 # https://stackoverflow.com/questions/31997859/bulk-insert-a-pandas-dataframe-using-sqlalchemy
 csv_file_path = '/media/felipe/DATA/Repos/GarminProj/Activities/activity_2747046691.csv'
 import pandas as pd
 data = pd.read_csv(csv_file_path)
+id = csv_file_path.split('_')[-1]
+id = id.split(".")[0]
+data["idGarmin"] = id
+summaryData = data[-1:]
+#data.drop(data[data.Divisão == "Summary"].index)
+data = data.drop(data[-1:].index)
 # INSERIR idGARMIN
 data = data.to_dict(orient='records')
+summaryData = summaryData.to_dict(orient='records')
 data[0].keys()
 con.execute(partials.insert(), data)
+con.execute(summary.insert(), summaryData)
 
-session.commit()
+#session.commit()
 
-session.close()
+#session.close()
