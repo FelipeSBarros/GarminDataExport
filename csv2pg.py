@@ -74,6 +74,8 @@ def csv2pg(inFolder, inFormat, databaseUser, databasePW, databaseName, databaseS
         createPartialsTable(con, meta)
     else:
         print('No need to create table...')
+        summary = meta.tables["summary"]
+        partials = meta.tables["partials"]
 
     # Creating file list
     fileList = glob.glob(os.path.join(inFolder, "*.{0}".format(inFormat)))
@@ -104,6 +106,4 @@ def csv2pg(inFolder, inFormat, databaseUser, databasePW, databaseName, databaseS
 inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities'
 inFormat = "csv"
 
-# summary.drop(con)
-# partials.drop(con)
 csv2pg(inFolder, inFormat, databaseUser, databasePW, databaseName, databaseServer)
