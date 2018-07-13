@@ -1,7 +1,7 @@
 from time import sleep
 from pyvirtualdisplay import Display
 from selenium import webdriver
-import Infos
+from Infos import GCuser, GCpass, databaseServer, databaseName, databaseUser, databasePW
 import os
 import sqlalchemy # To work with PostgreSQL
 import geoalchemy2 # To work with PostgIS
@@ -138,6 +138,7 @@ def connect(databaseUser, databasePW, databaseName, databaseServer, port=5432):
     meta = sqlalchemy.MetaData(bind=con, reflect=True)
 
     return con, meta
+
 
 # Testing
 con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port = 5432)
