@@ -1,3 +1,13 @@
+﻿-- updateting table to se SRID
+-- tracks table
+UPDATE tracks SET wkb_geometry = ST_SetSRID(wkb_geometry, 4326);
+SELECT distinct(st_srid(wkb_geometry)) from tracks;
+
+-- track_points table
+UPDATE track_points SET wkb_geometry = ST_SetSRID(wkb_geometry, 4326);
+SELECT distinct(st_srid(wkb_geometry)) from track_points ;
+
+-- tests to change from point to tracks
 WITH ordered AS (
  SELECT "name", track_seg_point_id, ST_SetSRID(wkb_geometry, 4326) as wkb_geometry
  FROM public.track_points order by track_seg_point_id

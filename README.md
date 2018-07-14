@@ -29,8 +29,11 @@ print(create_view)
 :heavy_check_mark: [Selenium](https://selenium-python.readthedocs.io/)  
 :heavy_check_mark: [osgeo](http://gdal.org/python/)  
 :heavy_check_mark: [SQLAlchemy](http://www.sqlalchemy.org/)  
+:heavy_check_mark: [GeoSQLAlchemy](https://geoalchemy-2.readthedocs.io/en/latest/)  
 :heavy_check_mark: [psycopg2](http://initd.org/psycopg/docs/)  
 :heavy_check_mark: [pyvirtualdisplay](http://pyvirtualdisplay.readthedocs.io/en/latest/)  
+:heavy_check_mark: [pandas](https://readthedocs.org/projects/pandas/)  
+:heavy_check_mark: [geopandas](http://geopandas.org/index.html)  
   
 #### Important consideration about installation  
 * [Installing and config Chrome for Selenium](https://christopher.su/2015/selenium-chromedriver-ubuntu/)  
@@ -58,7 +61,8 @@ print(create_view)
 * http://docs.sqlalchemy.org/en/rel_1_0/index.html  
 * http://initd.org/psycopg/docs/
 * https://wiki.postgresql.org/wiki/Psycopg2_Tutorial  
-* http://gdal.org/functions_c.html#index_c
+* http://gdal.org/functions_c.html#index_c  
+* https://ocefpaf.github.io/python4oceanographers/  
 
 ## Data base creation:
 ```
