@@ -1,5 +1,5 @@
 import os, glob
-from sqlalchemy import Table, Column, Integer, String, Float, Time, create_engine, MetaData # To work with PostgreSQL
+from sqlalchemy import Table, Column, Integer, String, Float, Time, create_engine, MetaData, Date, BigInteger # To work with PostgreSQL
 from geoalchemy2 import Geometry, WKTElement# To work with PostgIS
 import geopandas as gpd
 from Infos import databaseServer, databaseName, databaseUser, databasePW
@@ -18,30 +18,28 @@ def connect(databaseUser, databasePW, databaseName, databaseServer, port=5432):
     meta = MetaData(bind=con, reflect=True)
 
     return con, meta
-con, meta = connect(databaseUser, databasePW, databaseName, databaseServer)
+# con, meta = connect(databaseUser, databasePW, databaseName, databaseServer)
+
 def get_garmin_id(con):
     """Get from database the activities ids already saved"""
-
     result = con.execute("select * from garmin_ids")
     return [x[0] for x in result]
 
-"""" Testando """
-inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities'
-inFormat = "gpx"
-gpxLayers = ['waypoints', 'routes', 'tracks', 'route_points', 'track_points']
+
 def gpx2pg(inFolder, inFormat, con, meta):
 
     # Testing if Spatial tables already exists
-    if not all(gpxLayers) in meta.tables:
+    if not all(x in meta.tables for x in gpxLayers):
         print('Creating spatial tables...')
-        createSpatialTable(con, meta)
+        # TODO create only those tables not created yet?!
+        createSpatialTable(con, meta) # will create all tables
     else:
         print('No need to create table...')
-        waypoints = meta.tables["waypoints"]
-        routes = meta.tables["routes"]
-        tracks = meta.tables["tracks"]
-        route_points = meta.tables["route_points"]
-        track_points = meta.tables["track_points"]
+        #waypoints = meta.tables["waypoints"]
+        #routes = meta.tables["routes"]
+        #tracks = meta.tables["tracks"]
+        #route_points = meta.tables["route_points"]
+        #track_points = meta.tables["track_points"]
 
     def create_wkt_element(geom):
         """"function Use GeoAlchemy's WKTElement to create a geom with SRID"""
@@ -53,34 +51,36 @@ def gpx2pg(inFolder, inFormat, con, meta):
         # i = fileList [0]
         idGarmin = i.split("_")[-1]
         idGarmin = idGarmin.split(".")[0]
-
-        # Identify Layers in file
-        layers = fiona.listlayers(i)
-        for l in layers:
-            # l = layers[0]
-            table = meta.tables[i] # getting spatial table related to layer
-            try:
-                data = gpd.read_file(i, layer=l)
-                # Use GeoAlchemy's WKTElement to create a geom with SRID
-                data['geometry'] = data['geometry'].apply(create_wkt_element)
-                data["idGarmin"] = idGarmin
-                # Converting to Dictionary to import several feature at once
-                dataDict = data.to_dict(orient='records')
-                # Executing insert statement
-                con.execute(table.insert(), dataDict)
-
-            except KeyError:
-                print("Layer {} from {} data without feature...".format(l, i))
-
-            except :
-                print("Other error ocurred")
+        # Test if activity already saved (idGarmin)
+        if idGarmin in get_garmin_id(con):
+            print("Activity {} already saved!".format(idGarmin))
+        else:
+            # Identify Layers in file
+            layers = fiona.listlayers(i)
+            for l in layers:
+                # l = layers[0]
+                table = meta.tables[l] # getting spatial table related to layer
+                try:
+                    data = gpd.read_file(i, layer=l)
+                    # Use GeoAlchemy's WKTElement to create a geom with SRID
+                    data['geometry'] = data['geometry'].apply(create_wkt_element)
+                    data["idGarmin"] = idGarmin
+                    # Converting to Dictionary to import several feature at once
+                    dataDict = data.to_dict(orient='records')
+                    # Executing insert statement
+                    con.execute(table.insert(), dataDict)
+                    print("Layer {} from {} SAVED!".format(l, i))
+                except KeyError:
+                    print("Layer {} from {} data without feature...".format(l, i))
+                #except:
+                #    print("Other error ocurred")
 
 
 def createSpatialTable(con, meta):
     """Create partials and summery table"""
     # defining table columns and data type
     waypoints = Table('waypoints', meta,
-                      Column('idGarmin', String),
+                      Column('idGarmin', BigInteger),
                       Column('ele', Float),
                       Column('time', Time),
                       Column('magvar', Float),
@@ -109,7 +109,7 @@ def createSpatialTable(con, meta):
                       )
 
     routes = Table('routes', meta,
-                   Column('idGarmin', String),
+                   Column('idGarmin', BigInteger),
                    Column('name', String),
                    Column('cmt', String),
                    Column('desc', String),
@@ -127,7 +127,7 @@ def createSpatialTable(con, meta):
                    )
 
     tracks = Table('tracks', meta,
-                   Column('idGarmin', String),
+                   Column('idGarmin', BigInteger),
                    Column('name', String),
                    Column('name', String),
                    Column('cmt', String),
@@ -146,7 +146,7 @@ def createSpatialTable(con, meta):
                    )
 
     route_points = Table('route_points', meta,
-                         Column('idGarmin', String),
+                         Column('idGarmin', BigInteger),
                          Column('ele', Float),
                          Column('time', Time),
                          Column('magvar', Float),
@@ -167,12 +167,12 @@ def createSpatialTable(con, meta):
                    )
 
     track_points = Table('track_points', meta,
-                         Column('idGarmin', String),
+                         Column('idGarmin', BigInteger),
                          Column('track_fid', String),
                          Column('track_seg_id', String),
                          Column('track_seg_point_id', String),
                          Column('ele', String),
-                         Column('time', Time),
+                         Column('time', Date),
                          Column('magvar', String),
                          Column('geoidheight', String),
                          Column('name', String),
@@ -199,8 +199,12 @@ def createSpatialTable(con, meta):
                                  )
     meta.create_all(con)
 
-createSpatialTable(con, meta)
-
+"""TESTE"""
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities'
+inFormat = "gpx"
+gpxLayers = ['waypoints', 'routes', 'tracks', 'route_points', 'track_points']
+# createSpatialTable(con, meta)
+# gpx2pg(inFolder, inFormat, con, meta)
 
 #spatialTest.drop(con)
 # reading file with geopandas... the data will be a dataframe with simple feature geometry

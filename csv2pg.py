@@ -1,5 +1,7 @@
 from Infos import databaseServer, databaseName, databaseUser, databasePW
 import sqlalchemy
+from sqlalchemy_views import CreateView, DropView
+from sqlalchemy.sql import select
 import geoalchemy2
 import os, glob
 import pandas as pd
@@ -23,7 +25,7 @@ def createPartialsTable(con, meta):
     """Create partials and summery table"""
     partials = Table('partials', meta,
                      Column('idGarmin', String),
-                     Column('Divisão', String),
+                     Column('Divisão', Integer),
                      Column('Hora', Time()),
                      Column('Moving Time', String),
                      Column('Distância', Float(2)),
@@ -62,6 +64,14 @@ def createPartialsTable(con, meta):
                     )
     # Creating partial table
     meta.create_all(con)
+
+    print("Creating VIEW garmin_ids...")
+    summary = meta.tables['summary']
+    view = Table('garmin_ids', meta)
+    definition = select([summary.c.idGarmin]).distinct()
+    createview = CreateView(view, definition, or_replace=True)
+    con.execute(createview)
+    print("Done")
 
 def csv2pg(inFolder, inFormat, databaseUser, databasePW, databaseName, databaseServer):
     '''Import csv from folder to PGSQL'''
