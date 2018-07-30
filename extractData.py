@@ -21,6 +21,11 @@ def logIn(loginPage, GCuser, GCpass):
         os.makedirs(Activitywd)
 
     # starting the driver
+    #from selenium.webdriver.chrome.options import Options
+    #chrome_options = Options()
+    #chrome_options.add_experimental_option("prefs",{
+    #    "download.default_directory": "/media/felipe/DATA/Repos/GarminProj"})
+    #browser = webdriver.Chrome(chrome_options=chrome_options)
     browser = webdriver.Chrome()
 
     # Getting login page with the driver
@@ -57,6 +62,7 @@ def getActivities(browser, activitiesPage, saved_ids):
     # Getting activities twice to clean some fake activities (without link)
     activities = browser.find_elements_by_class_name("inline-edit-target ")
     act = browser.find_elements_by_class_name("inline-edit-target ")
+
 
     # Removing *wrong* activities and getting ID from right activities
     ids = []
