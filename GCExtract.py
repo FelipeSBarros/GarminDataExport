@@ -25,6 +25,9 @@ class GarminConnect:
         assert "Garmin Connect" in self.driver.title
         print("OK")
         #activities = self.driver.find_elements_by_class_name("inline-edit-target ")
+        #activities = self.driver.find_elements_by_id("activity-name-edit")
+        WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "activity-name-edit")))
         activities = self.driver.find_elements_by_id("activity-name-edit")
         validActivities = [i for i in activities if i.text] # if returning only valid activities
         print("Total Activities: " + str(len(validActivities )))
@@ -45,50 +48,43 @@ class GarminConnect:
                     activities[a].click()
 
             # In activitie page, find the gear icon
-            gear = WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "icon-gear"))).click()
-            # TODO seguir o script.
-            keep = False
 
-            """gear = browser.find_element_by_class_name("icon-gear")
-            sleep(2)
-            gear.click()
-            sleep(2)
             print("Getting CSV")
+
             # Find CSV file and download
-            csv = browser.find_element_by_id("btn-export-csv")
-            sleep(2)
-            csv.click()
-            print("Is there a map?")
-            sleep(2)
+            #csv = browser.find_element_by_id("btn-export-csv")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "btn-export-csv"))).click()
             # Find if there is a spatial infomation (map)
-            map = browser.find_element_by_id("activityMapViewPlaceholder")
-            sleep(2)
-            if map.text:
+            #map = browser.find_element_by_id("activityMapViewPlaceholder")
+            if WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "activityMapViewPlaceholder"))):
                 # If there is a map, doanload GPX file
                 print("Getting Map...")
-                gear = browser.find_element_by_class_name("icon-gear")
-                sleep(2)
-                gear.click()
-                sleep(2)
-                gpx = browser.find_element_by_id("btn-export-gpx")
-                sleep(2)
-                gpx.click()
-                sleep(2)
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "icon-gear"))).click()
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "btn-export-gpx"))).click()
+            else:
+                print("NO GPX FILE")
 
             # Once done, use next icon co go to next activitie
             print("Going to next activitie...")
-            browser.find_element_by_class_name("page-previous").click()
-            sleep(2)
-            nxtid = browser.current_url.split("/")[-1]
-            sleep(2)
+            #browser.find_element_by_class_name("page-previous").click()
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "page-previous"))).click()
+            nxtid = self.driver.current_url.split("/")[-1]
+            #sleep(2)
+            self.driver.implicitly_wait(2)  # seconds
             if nxtid in saved_ids:  # test if the current activitie is already saved or not.
-                # If it is already saved, change keep to False, to stop *while* loop
-                keep = False
-                sleep(1)
-                print("End of NEW activities download")
-""""
+                    # If it is already saved, change keep to False, to stop *while* loop
+                    keep = False
+                    print("End of NEW activities download")
 
+# Teste
+saved_ids = [2888120512]
 #ff = webdriver.Firefox()
 chrome = webdriver.Chrome()
 GC = GarminConnect(chrome)
