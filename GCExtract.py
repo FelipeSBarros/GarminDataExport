@@ -12,6 +12,7 @@ class GarminConnect:
         self.urlActivities = 'https://connect.garmin.com/modern/activities'
 
     def login(self, userName, passWord):
+        """Function to login to Garmin Connect page"""
         self.driver.get(self.urlLogin)
         assert "GARMIN Authentication Application" in self.driver.title
         self.driver.find_element_by_id("username").send_keys(userName)
@@ -20,20 +21,15 @@ class GarminConnect:
         print("Logged in!")
         return self.driver
 
-    def getActivities(self):
+    def getActivities(self, saved_ids):
+        """Function to navigate on activities page and download data"""
         self.driver.get(self.urlActivities)
         assert "Garmin Connect" in self.driver.title
-        print("OK")
-        #activities = self.driver.find_elements_by_class_name("inline-edit-target ")
-        #activities = self.driver.find_elements_by_id("activity-name-edit")
         WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "activity-name-edit")))
         activities = self.driver.find_elements_by_id("activity-name-edit")
         validActivities = [i for i in activities if i.text] # if returning only valid activities
         print("Total Activities: " + str(len(validActivities )))
-        return validActivities
-
-    def getData(self, activities, saved_ids):
         keep = True
         a = 0
         while keep:
@@ -50,22 +46,19 @@ class GarminConnect:
             # wait until load page
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "page-previous")))
-            self.driver.implicitly_wait(5)  # seconds
+            self.driver.implicitly_wait(3)
             # In activitie page, find the gear icon
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "icon-gear"))).click()
 
-            print("Getting CSV")
-
             # Find CSV file and download
-            #csv = browser.find_element_by_id("btn-export-csv")
+            print("Getting CSV")
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "btn-export-csv"))).click()
             # Find if there is a spatial infomation (map)
-            #map = browser.find_element_by_id("activityMapViewPlaceholder")
             if WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "activityMapViewPlaceholder"))):
-                # If there is a map, doanload GPX file
+                # If there is a map, download GPX file
                 print("Getting Map...")
                 WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "icon-gear"))).click()
@@ -73,17 +66,15 @@ class GarminConnect:
                     EC.presence_of_element_located((By.ID, "btn-export-gpx"))).click()
             else:
                 print("NO GPX FILE")
-                self.driver.implicitly_wait(2)  # seconds
+                self.driver.implicitly_wait(3)  # seconds
 
             # Once done, use next icon co go to next activitie
             print("Going to next activitie...")
-            #browser.find_element_by_class_name("page-previous").click()
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "page-previous"))).click()
-            self.driver.implicitly_wait(2)  # seconds
             nxtid = self.driver.current_url.split("/")[-1]
-            print(nxtid)
-            if int(nxtid) in saved_ids:# test if the current activitie is already saved or not.
+            # test if the current activitie is already saved or not.
+            if int(nxtid) in saved_ids:
                 # If it is already saved, change keep to False, to stop *while* loop
                 keep = False
                 print("End of NEW activities download")
@@ -95,5 +86,4 @@ saved_ids = [2888120512]
 chrome = webdriver.Chrome()
 GC = GarminConnect(chrome)
 f = GC.login(userName = GCuser, passWord = GCpass)
-acti = GC.getActivities()
-GC.getData(acti, saved_ids)
+acti = GC.getActivities(saved_ids)
