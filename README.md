@@ -1,17 +1,40 @@
-# Garmin data export
+# Garmin Connect data export
 **About this project:** The main idea of this project is to not only extract all activities data from Garmin Connect for those who use its system, but also to organize both GPX and CSV data on a **PostGIS** database. 
 
 :warning: **Obviously, this project has no relation to Garmin and its use should be tke care of its rigth**.
 
 ## Setup:
+If you are not interested on organizing your data on PostGIS, ou can skip the database installation and use only function related on [GCExport](#TODO insert link!).  
+More info about [spatial database](https://postgis.net/).
 
 #### PostgreSQL
-```
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO felipe2;
-```
+
+**Make sure you have defined above elements on [Infos.py](#TODO inser link to title):**
+
+* Database created with GIS extensions;
+* User and password to refered database;
+* Privileges to the database;
 
 ```
-
+# Data base creation:
+CREATE DATABASE dbName;
+psql dbName
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
+CREATE USER usrName WITH PASSWORD 'usrPassWord';
+GRANT ALL PRIVILEGES ON DATABASE dbName TO usrName;
+```
+**Info.py** exemple
+```buildoutcfg
+GCuser="YOUR_USER_NAME"
+GCpass="YOUR_PASSWORD"
+databaseServer = "database_host"
+databaseName = "dbName"
+databaseUser = "usrName"
+databasePW = "usrPassWord"
+```
+Then, run [setup.py](#TODO create this setup.py which will create all tables IF not exists)
+```
 from sqlalchemy_views import CreateView, DropView
 from sqlalchemy.sql import text
 from sqlalchemy import Table
@@ -23,7 +46,6 @@ definition = text("SELECT distinct(\"idGarmin\") FROM summary")
 
 create_view = CreateView(view, definition, or_replace=True)
 print(create_view)
-
 ```
 ## Python 3 module used in this project
 :heavy_check_mark: [Selenium](https://selenium-python.readthedocs.io/)  
@@ -37,19 +59,13 @@ print(create_view)
   
 #### Important consideration about installation  
 * [Installing and config Chrome for Selenium](https://christopher.su/2015/selenium-chromedriver-ubuntu/)  
-* [**Consider Chrome Driver latest version**](https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip)  
-
+* **[Consider Chrome Driver latest version](https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip)**  
 * **sqlalchemy_views**  
 
 ### About codes:
-* [infos.py](): Set of important parameters and informations that will be necessary:
-    * GCuser = "GarminUserName"
-    * GCpass="GarminPassWord"
-    * databaseServer = "localhost"
-    * databaseName = "DBName"
-    * databaseUser = "DBUser"
-    * databasePW = "DBPassWord"
-* [s]()
+   
+* [infos.py](#TODO insert link): Set of important parameters and informations that will be necessary, as mentioned before;
+* [others.py](#TODO insert all codes) 
 
 ## Useful links:
 * https://www.guru99.com/selenium-python.html  
@@ -64,15 +80,7 @@ print(create_view)
 * http://gdal.org/functions_c.html#index_c  
 * https://ocefpaf.github.io/python4oceanographers/  
 
-## Data base creation:
-```
-postgres=# CREATE DATABASE tennis;
-CREATE DATABASE
-postgres=# CREATE USER federer WITH PASSWORD 'grandestslam';
-CREATE ROLE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE tennis TO federer;
-GRANT
-```
+
 
 ### *Garmin Connect* links
 
