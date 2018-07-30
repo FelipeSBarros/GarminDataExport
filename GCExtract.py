@@ -33,7 +33,7 @@ class GarminConnect:
         print("Total Activities: " + str(len(validActivities )))
         return validActivities
 
-    def getData(self, activities):
+    def getData(self, activities, saved_ids):
         keep = True
         a = 0
         while keep:
@@ -47,6 +47,10 @@ class GarminConnect:
                     print("Going to {} activitie page".format(activities[a].text))
                     activities[a].click()
 
+            # wait until load page
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "page-previous")))
+            self.driver.implicitly_wait(5)  # seconds
             # In activitie page, find the gear icon
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "icon-gear"))).click()
@@ -69,19 +73,21 @@ class GarminConnect:
                     EC.presence_of_element_located((By.ID, "btn-export-gpx"))).click()
             else:
                 print("NO GPX FILE")
+                self.driver.implicitly_wait(2)  # seconds
 
             # Once done, use next icon co go to next activitie
             print("Going to next activitie...")
             #browser.find_element_by_class_name("page-previous").click()
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "page-previous"))).click()
-            nxtid = self.driver.current_url.split("/")[-1]
-            #sleep(2)
             self.driver.implicitly_wait(2)  # seconds
-            if nxtid in saved_ids:  # test if the current activitie is already saved or not.
-                    # If it is already saved, change keep to False, to stop *while* loop
-                    keep = False
-                    print("End of NEW activities download")
+            nxtid = self.driver.current_url.split("/")[-1]
+            print(nxtid)
+            if int(nxtid) in saved_ids:# test if the current activitie is already saved or not.
+                # If it is already saved, change keep to False, to stop *while* loop
+                keep = False
+                print("End of NEW activities download")
+                self.driver.close()
 
 # Teste
 saved_ids = [2888120512]
@@ -90,4 +96,4 @@ chrome = webdriver.Chrome()
 GC = GarminConnect(chrome)
 f = GC.login(userName = GCuser, passWord = GCpass)
 acti = GC.getActivities()
-GC.getData(acti)
+GC.getData(acti, saved_ids)
