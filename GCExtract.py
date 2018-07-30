@@ -79,11 +79,3 @@ class GarminConnect:
                 keep = False
                 print("End of NEW activities download")
                 self.driver.close()
-
-# Teste
-saved_ids = [2888120512]
-#ff = webdriver.Firefox()
-chrome = webdriver.Chrome()
-GC = GarminConnect(chrome)
-f = GC.login(userName = GCuser, passWord = GCpass)
-acti = GC.getActivities(saved_ids)
