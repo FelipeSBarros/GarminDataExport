@@ -3,7 +3,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-from Infos import GCuser, GCpass, databaseServer, databaseName, databaseUser, databasePW
 
 class GarminConnect:
     def __init__(self, driver):

@@ -15,7 +15,7 @@ More info about [spatial database](https://postgis.net/).
 * User and password to refered database;
 * Privileges to the database;
 
-```
+```dbSpecifications
 # Data base creation:
 CREATE DATABASE dbName;
 psql dbName
