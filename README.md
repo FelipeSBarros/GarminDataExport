@@ -17,12 +17,21 @@ More info about [spatial database](https://postgis.net/).
 
 ```dbSpecifications
 # Data base creation:
-CREATE DATABASE dbName;
-psql dbName
+sudo su postgres
+psql
+CREATE DATABASE dbName; # creates database
+\q # exit
+psql dbName # go to recently created data base
+
+# create GIS extensions
 CREATE EXTENSION postgis;
-CREATE EXTENSION postgis_topology;
-CREATE USER usrName WITH PASSWORD 'usrPassWord';
-GRANT ALL PRIVILEGES ON DATABASE dbName TO usrName;
+CREATE EXTENSION postgis_topology; 
+# create user and password
+CREATE USER usrName WITH PASSWORD 'usrPassWord'; 
+# give privileges to new user
+GRANT ALL PRIVILEGES ON DATABASE dbName TO usrName; 
+\q # exit database
+exit # exit as superuser postgres
 ```
 **Info.py** exemple
 ```buildoutcfg
@@ -68,17 +77,21 @@ print(create_view)
 * [others.py](#TODO insert all codes) 
 
 ## Useful links:
-* https://www.guru99.com/selenium-python.html  
-* http://www.thetaranights.com/login-to-a-website-using-selenium-python-python-selenium-example/  
-* https://selenium-python.readthedocs.io/  
-* http://www.sqlalchemy.org/library.html#tutorials
-* https://suhas.org/sqlalchemy-tutorial/
-* http://docs.sqlalchemy.org/en/rel_1_0/core/tutorial.html  
-* http://docs.sqlalchemy.org/en/rel_1_0/index.html  
-* http://initd.org/psycopg/docs/
-* https://wiki.postgresql.org/wiki/Psycopg2_Tutorial  
-* http://gdal.org/functions_c.html#index_c  
-* https://ocefpaf.github.io/python4oceanographers/  
+* Selenium  
+  * https://www.guru99.com/selenium-python.html  
+  * http://www.thetaranights.com/login-to-a-website-using-selenium-python-python-selenium-example/  
+  * https://selenium-python.readthedocs.io/
+* SQLAlchemy  
+  * http://www.sqlalchemy.org/library.html#tutorials
+  * https://suhas.org/sqlalchemy-tutorial/
+  * http://docs.sqlalchemy.org/en/rel_1_0/core/tutorial.html  
+* psycopg2
+  * http://initd.org/psycopg/docs/
+  * https://wiki.postgresql.org/wiki/Psycopg2_Tutorial  
+* Gdal  
+  * http://gdal.org/functions_c.html#index_c  
+* General 
+  * https://ocefpaf.github.io/python4oceanographers/  
 
 
 
