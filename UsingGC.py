@@ -1,7 +1,10 @@
-from Infos import GCuser, GCpass, databaseServer, databaseName, databaseUser, databasePW
-from GCExtract import GarminConnect as GC
 from selenium import webdriver
 from pyvirtualdisplay import Display
+from GCExtract import GarminConnect as GC
+from dbSetup import con, meta
+from gpxImport import gpx2pg
+from csv2pg import csv2pg
+
 GC.login()
 GarminConnect.login()
 # creating display
@@ -13,3 +16,15 @@ GC = GC(chrome)
 GC.login(userName = GCuser, passWord = GCpass)
 saved_ids = [2888120512]
 GC.getActivities(saved_ids)
+
+# importing files
+
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities2'
+inFormat = "gpx"
+
+gpx2pg(con, meta, inFolder, inFormat)
+
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities2'
+inFormat = "csv"
+
+csv2pg(con, meta, inFolder, inFormat)
