@@ -2,9 +2,9 @@ from selenium import webdriver
 from pyvirtualdisplay import Display
 from GCExtract import GarminConnect as GC
 from dbSetup import con, meta
-from gpxImport import gpx2pg
-from csv2pg import csv2pg
+from ImportActivities import gpx2pg, csv2pg
 
+# Getting activities
 GC.login()
 GarminConnect.login()
 # creating display
@@ -17,8 +17,7 @@ GC.login(userName = GCuser, passWord = GCpass)
 saved_ids = [2888120512]
 GC.getActivities(saved_ids)
 
-# importing files
-
+# importing Activities to Database
 inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities2'
 inFormat = "gpx"
 
