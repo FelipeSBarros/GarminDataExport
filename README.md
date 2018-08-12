@@ -91,7 +91,8 @@ print(create_view)
 * Gdal  
   * http://gdal.org/functions_c.html#index_c  
 * General 
-  * https://ocefpaf.github.io/python4oceanographers/  
+  * https://ocefpaf.github.io/python4oceanographers/
+  * [Bulk insertion](https://stackoverflow.com/questions/31997859/bulk-insert-a-pandas-dataframe-using-sqlalchemy)
 
 
 
