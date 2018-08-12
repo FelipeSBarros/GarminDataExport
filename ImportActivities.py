@@ -30,7 +30,7 @@ def gpx2pg(con, meta, inFolder, inFormat):
                 try:
                     data = gpd.read_file(i, layer=l)
                     # Use GeoAlchemy's WKTElement to create a geom with SRID
-                    data['geometry'] = data['geometry'].apply(create_wkt_element) # TODO insert WKTElement(geom.wkt, srid=4326) direct here instead of creatinf function?
+                    data['geometry'] = data['geometry'].apply(create_wkt_element) # TODO insert WKTElement(geom.wkt, srid=4326) direct here instead of creating function?
                     data["idGarmin"] = idGarmin
                     # Converting to Dictionary to import several feature at once
                     dataDict = data.to_dict(orient='records')
