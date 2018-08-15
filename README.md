@@ -55,12 +55,49 @@ databasePW = "usrPassWord" # Database Password
 ```
 
 ### 3) Extracting data
+On **[UsingGC.py](https://github.com/FelipeSBarros/GarminDataExport/blob/refactorFunction/UsingGC.py)** you have the codes to:
 
-#### 3.2) Creating database tables
+#### 3.1) Extract your data from Garmin Connect
+A few functions were created uding selenium module.
+ They are imported bu
+```
+from GCExtract import GarminConnect as GC
+```
+And they are:  
 
+- **GC.login(userName, passWord)** which will login to the website and return the webdriver logged in;  
+- **GC.getActivities(saved_ids)** which will navigate thru the activities downloading partials **CSV** and **GPX** files. The parameter *saved_ids* are the garmin activities ID already saved on the database which can be retrieved using the function *[get_garmin_id](https://github.com/FelipeSBarros/GarminDataExport/blob/refactorFunction/dbSetup.py#L203)* from *[dbSetup.py](#32-creating-database-tables)*
+
+#### 3.2) Create database tables
+By importing the **[dbSetup.py](https://github.com/FelipeSBarros/GarminDataExport/blob/refactorFunction/dbSetup.py)** all tables will be created to host your data after extracting it from the Garmin Connect Web Site.
+Also we will retriece the *con* and *meta* objects to work with SQLAlchemy and the *get_garmin_id* function.
+```dbSetup
+from dbSetup import con, meta, get_garmin_id
+```
 :warning: According to GEOSQLAlchemy [documentation](https://geoalchemy-2.readthedocs.io/en/0.2.6/types.html) the spatial index are created by default. 
-### 3) Importing data
 
+### 3) Importing data
+Two functions were designed to import the data retrieve from Garmin Connect to the database>
+
+- gpx2pg(con, meta, inFolder, inFormat)
+- csv2pg(con, meta, inFolder, inFormat)  
+
+Where: 
+
+* *con* is the SQLAlchemy engine;
+* *meta* is the SQLAlchemy metadata;
+* *inFolder* the path to folder where the files are saved;
+* *inFormat* is the file extention:
+   * 'gpx': when usin gpx2pg;
+   * 'csv': when using csv2pg;
+
+**Example:**
+```
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities2'
+inFormat = "gpx"
+
+gpx2pg(con, meta, inFolder, inFormat)
+```
   
 ## Important consideration about installation  
 * [Installing and config Chrome for Selenium](https://christopher.su/2015/selenium-chromedriver-ubuntu/)  
