@@ -7,7 +7,7 @@
 If you are not interested on organizing your data on PostGIS, ou can skip the database installation and use only function related on [GCExport](#TODO insert link!).  
 More info about [spatial database](https://postgis.net/).
 
-#### PostgreSQL
+#### 1) Setup PostgreSQL/GIS
 
 **Make sure you have defined above elements on [Infos.py](#TODO inser link to title):**
 
@@ -33,29 +33,24 @@ GRANT ALL PRIVILEGES ON DATABASE dbName TO usrName;
 \q # exit database
 exit # exit as superuser postgres
 ```
-**Info.py** exemple
+#### 2) Setting up Info.py file
+Make sure you have all aditional information necessary to run the code on **Info.py** file, like shown below:
 ```buildoutcfg
-GCuser="YOUR_USER_NAME"
-GCpass="YOUR_PASSWORD"
-databaseServer = "database_host"
-databaseName = "dbName"
-databaseUser = "usrName"
-databasePW = "usrPassWord"
+GCuser="YOUR_USER_NAME" # Garmin Connect User Name
+GCpass="YOUR_PASSWORD" # Garmin Connect Password
+databaseServer = "database_host" # Database Serve adress
+databaseName = "dbName" # Database Name
+databaseUser = "usrName" # Database User Name
+databasePW = "usrPassWord" # Database Password
 ```
-Then, run [setup.py](#TODO create this setup.py which will create all tables IF not exists)
-```
-from sqlalchemy_views import CreateView, DropView
-from sqlalchemy.sql import text
-from sqlalchemy import Table
 
-con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port = 5432)
+#### 3) Extracting data
 
-view = Table('garmin_ids', meta)
-definition = text("SELECT distinct(\"idGarmin\") FROM summary")
+##### 3.2) Creating database tables
 
-create_view = CreateView(view, definition, or_replace=True)
-print(create_view)
-```
+:warning: According to GEOSQLAlchemy [documentation](https://geoalchemy-2.readthedocs.io/en/0.2.6/types.html) the spatial index are created by default. 
+#### 3) Importing data
+
 ## Python 3 module used in this project
 :heavy_check_mark: [Selenium](https://selenium-python.readthedocs.io/)  
 :heavy_check_mark: [osgeo](http://gdal.org/python/)  

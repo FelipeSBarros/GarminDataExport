@@ -22,10 +22,9 @@ def connect(databaseUser, databasePW, databaseName, databaseServer, port = 5432)
 
 con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port = 5432)
 
-"""Create partials and summery table"""
-# defining table columns and data type
+"""Create spatial, partials and summary table"""
 waypoints = Table('waypoints', meta,
-                  Column('idGarmin', BigInteger),
+                  Column('idGarmin', BigInteger, index = True),
                   Column('ele', Float),
                   Column('time', Time),
                   Column('magvar', Float),
@@ -50,11 +49,11 @@ waypoints = Table('waypoints', meta,
                   Column('ageofdgpsdata', Float),
                   Column('dgpsid', Integer),
                   Column('geometry',
-                           Geometry('POINT', srid=4326))
+                           Geometry('POINT', srid = 4326))
                   )
 
 routes = Table('routes', meta,
-               Column('idGarmin', BigInteger),
+               Column('idGarmin', BigInteger, index = True),
                Column('name', String),
                Column('cmt', String),
                Column('desc', String),
@@ -72,8 +71,7 @@ routes = Table('routes', meta,
                )
 
 tracks = Table('tracks', meta,
-               Column('idGarmin', BigInteger),
-               Column('name', String),
+               Column('idGarmin', BigInteger, index = True),
                Column('name', String),
                Column('cmt', String),
                Column('desc', String),
@@ -91,7 +89,9 @@ tracks = Table('tracks', meta,
                )
 
 route_points = Table('route_points', meta,
-                     Column('idGarmin', BigInteger),
+                     Column('idGarmin', BigInteger, index = True),
+                     Column('routefid', String),
+                     Column('route_point_id', String),
                      Column('ele', Float),
                      Column('time', Time),
                      Column('magvar', Float),
@@ -107,12 +107,20 @@ route_points = Table('route_points', meta,
                      Column('link2_text', String),
                      Column('link2_type', String),
                      Column('sym', String),
+                     Column('type', String),
+                     Column('fix', String),
+                     Column('sat', String),
+                     Column('hdop', String),
+                     Column('vdop', String),
+                     Column('pdop', String),
+                     Column('ageofdgpsdata', String),
+                     Column('dgpsid', String),
                      Column('geometry',
                             Geometry('POINT', srid=4326))
                )
 
 track_points = Table('track_points', meta,
-                     Column('idGarmin', BigInteger),
+                     Column('idGarmin', BigInteger, index = True),
                      Column('track_fid', String),
                      Column('track_seg_id', String),
                      Column('track_seg_point_id', String),
@@ -145,43 +153,43 @@ track_points = Table('track_points', meta,
 
 """Create partials and summery table"""
 partials = Table('partials', meta,
-                 Column('idGarmin', BigInteger),
-                 Column('Divisão', Integer),
-                 Column('Hora', Time()),
-                 Column('Moving Time', String),
-                 Column('Distância', Float(2)),
+                 Column('idGarmin', BigInteger, index = True),
+                 Column('Split', Integer),
+                 Column('Time', Time()),
+                 Column('Moving Time', Time()),
+                 Column('Distance', Float(2), nullable = True),
                  Column('Elevation Gain', Integer),
-                 Column('Perda da elevação', Integer),
-                 Column('Ritmo médio', Time()),
-                 Column('Ritmo médio de movimento', String),
-                 Column('Melhor ritmo', Time()),
-                 Column('Cadência de corrida média', Float(4)),
-                 Column('Cadência de corrida máxima', Float(2)),
-                 Column('Comprimento médio da passada', String),
-                 Column('Frequência cardíaca média', String),
-                 Column('FC máxima', String),
-                 Column('Temperatura média', String),
-                 Column('Calorias', String)
+                 Column('Elev Loss', Integer),
+                 Column('Avg Pace', Time()),  # TODO check if this could be interval instead of time
+                 Column('Avg Moving Paces', Time()),  # TODO check if this could be interval instead of time
+                 Column('Best Pace', Time()),  # TODO check if this could be interval instead of time
+                 Column('Avg Run Cadence', Float(4)),
+                 Column('Max Run Cadence', Float(2)),
+                 Column('Avg Stride Length', Float(2), nullable = True),
+                 Column('Avg HR', Float(2), nullable = True),
+                 Column('Max HR', Float(2), nullable = True),
+                 Column('Avg Temperature', Float(2), nullable = True),
+                 Column('Calories', Float(2), nullable = True)
                  )
 
 summary = Table('summary', meta,
-                Column('idGarmin', BigInteger),
-                Column('Divisão', String),
-                Column('Hora', Time()),
-                Column('Moving Time', String),
-                Column('Distância', Float(2)),
+                Column('idGarmin', BigInteger, index = True),
+                Column('Split', String),
+                Column('Time', Time()),
+                Column('Moving Time', Time()),
+                Column('Distance', Float(2), nullable = True),
                 Column('Elevation Gain', Integer),
-                Column('Perda da elevação', Integer),
-                Column('Ritmo médio', Time()),
-                Column('Ritmo médio de movimento', String),
-                Column('Melhor ritmo', Time()),
-                Column('Cadência de corrida média', Float(4)),
-                Column('Cadência de corrida máxima', Float(2)),
-                Column('Comprimento médio da passada', String),
-                Column('Frequência cardíaca média', String),
-                Column('FC máxima', String),
-                Column('Temperatura média', String),
-                Column('Calorias', String)
+                Column('Elev Loss', Integer),
+                Column('Avg Pace', Time()), # TODO check if this could be interval instead of time
+                Column('Avg Moving Paces', Time()), # TODO check if this could be interval instead of time
+                Column('Best Pace', Time()), # TODO check if this could be interval instead of time
+                Column('Avg Run Cadence', Float(4)),
+                Column('Max Run Cadence', Float(2)),
+                Column('Avg Stride Length', Float(2), nullable = True),
+                Column('Avg HR', Float(2), nullable = True),
+                Column('Max HR', Float(2), nullable = True),
+                Column('Avg Temperature', Float(2), nullable = True),
+                Column('Calories', Float(2), nullable = True)
                 )
 # Creating partial table
 meta.create_all(con)
@@ -195,4 +203,4 @@ con.execute(createview)
 def get_garmin_id(con):
         """Get from database the activities ids already saved"""
         result = con.execute("select * from garmin_ids")
-        return [x[0] for x in result] #TODO convert values to set instad of list ?
+        return {x[0] for x in result}
