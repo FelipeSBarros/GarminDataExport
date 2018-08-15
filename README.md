@@ -3,13 +3,23 @@
 
 :warning: **Obviously, this project has no relation to Garmin and its use should be tke care of its rigth**.
 
+## Python 3 module used in this project
+:heavy_check_mark: [Selenium](https://selenium-python.readthedocs.io/)  
+:heavy_check_mark: [osgeo](http://gdal.org/python/)  
+:heavy_check_mark: [SQLAlchemy](http://www.sqlalchemy.org/)  
+:heavy_check_mark: [GeoSQLAlchemy](https://geoalchemy-2.readthedocs.io/en/latest/)  
+:heavy_check_mark: [psycopg2](http://initd.org/psycopg/docs/)  
+:heavy_check_mark: [pyvirtualdisplay](http://pyvirtualdisplay.readthedocs.io/en/latest/)  
+:heavy_check_mark: [pandas](https://readthedocs.org/projects/pandas/)  
+:heavy_check_mark: [geopandas](http://geopandas.org/index.html)  
+
 ## Setup:
 If you are not interested on organizing your data on PostGIS, ou can skip the database installation and use only function related on [GCExport](#TODO insert link!).  
 More info about [spatial database](https://postgis.net/).
 
-#### 1) Setup PostgreSQL/GIS
+### 1) Setup PostgreSQL/GIS
 
-**Make sure you have defined above elements on [Infos.py](#TODO inser link to title):**
+**Make sure you have defined above elements on [Infos.py](#2-setting-up-infopy-file):**
 
 * Database created with GIS extensions;
 * User and password to refered database;
@@ -33,7 +43,7 @@ GRANT ALL PRIVILEGES ON DATABASE dbName TO usrName;
 \q # exit database
 exit # exit as superuser postgres
 ```
-#### 2) Setting up Info.py file
+### 2) Setting up Info.py file
 Make sure you have all aditional information necessary to run the code on **Info.py** file, like shown below:
 ```buildoutcfg
 GCuser="YOUR_USER_NAME" # Garmin Connect User Name
@@ -44,32 +54,17 @@ databaseUser = "usrName" # Database User Name
 databasePW = "usrPassWord" # Database Password
 ```
 
-#### 3) Extracting data
+### 3) Extracting data
 
-##### 3.2) Creating database tables
+#### 3.2) Creating database tables
 
 :warning: According to GEOSQLAlchemy [documentation](https://geoalchemy-2.readthedocs.io/en/0.2.6/types.html) the spatial index are created by default. 
-#### 3) Importing data
+### 3) Importing data
 
-## Python 3 module used in this project
-:heavy_check_mark: [Selenium](https://selenium-python.readthedocs.io/)  
-:heavy_check_mark: [osgeo](http://gdal.org/python/)  
-:heavy_check_mark: [SQLAlchemy](http://www.sqlalchemy.org/)  
-:heavy_check_mark: [GeoSQLAlchemy](https://geoalchemy-2.readthedocs.io/en/latest/)  
-:heavy_check_mark: [psycopg2](http://initd.org/psycopg/docs/)  
-:heavy_check_mark: [pyvirtualdisplay](http://pyvirtualdisplay.readthedocs.io/en/latest/)  
-:heavy_check_mark: [pandas](https://readthedocs.org/projects/pandas/)  
-:heavy_check_mark: [geopandas](http://geopandas.org/index.html)  
   
-#### Important consideration about installation  
+## Important consideration about installation  
 * [Installing and config Chrome for Selenium](https://christopher.su/2015/selenium-chromedriver-ubuntu/)  
-* **[Consider Chrome Driver latest version](https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip)**  
-* **sqlalchemy_views**  
-
-### About codes:
-   
-* [infos.py](#TODO insert link): Set of important parameters and informations that will be necessary, as mentioned before;
-* [others.py](#TODO insert all codes) 
+* :warning: **[Consider Chrome Driver latest version](https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip)**  
 
 ## Useful links:
 * Selenium  
@@ -89,9 +84,7 @@ databasePW = "usrPassWord" # Database Password
   * https://ocefpaf.github.io/python4oceanographers/
   * [Bulk insertion](https://stackoverflow.com/questions/31997859/bulk-insert-a-pandas-dataframe-using-sqlalchemy)
 
-
-
-### *Garmin Connect* links
+## *Garmin Connect* links
 
 [url_gc_login](https://sso.garmin.com/sso/login?service=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect04&source=https%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.1-min.css&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&usernameShown=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=false)  
 [url_gc_post_auth](https://connect.garmin.com/post-auth/login?)  
