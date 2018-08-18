@@ -158,7 +158,8 @@ track_points = Table('track_points', meta,
 
 """Create partials and summery table"""
 partials = Table('partials', meta,
-                 Column('idGarmin', BigInteger, index = True, primary_key = True),
+                 Column('id', Integer, primary_key=True),
+                 Column('idGarmin', BigInteger, index = True),
                  Column('Split', Integer),
                  Column('Time', Interval),
                  Column('Moving Time', Interval),

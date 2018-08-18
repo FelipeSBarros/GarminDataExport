@@ -15,12 +15,12 @@ saved_ids = get_garmin_id(con)
 GC.getActivities(saved_ids)
 
 # importing Activities to Database
-inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities2'
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities'
 inFormat = "gpx"
 
 gpx2pg(con, meta, inFolder, inFormat)
 
-inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities2'
+inFolder = r'/media/felipe/DATA/Repos/GarminProj/Activities'
 inFormat = "csv"
 
 csv2pg(con, meta, inFolder, inFormat)
