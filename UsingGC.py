@@ -3,7 +3,7 @@ from pyvirtualdisplay import Display
 from GCExtract import GarminConnect as GC
 from dbSetup import con, meta, get_garmin_id
 from ImportActivities import gpx2pg, csv2pg
-
+from Infos import GCuser, GCpass
 
 # creating display
 display = Display(visible = 0, size = (1080, 1920))
