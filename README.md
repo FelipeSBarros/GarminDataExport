@@ -14,7 +14,7 @@
 :heavy_check_mark: [geopandas](http://geopandas.org/index.html)  
 
 ## Setup:
-If you are not interested on organizing your data on PostGIS, ou can skip the database installation and use only function related on [GCExport](#2-setting-up-infopy-file).  
+If you are not interested on organizing your data on PostGIS, ou can skip the database installation and use only function related on [extracting data](#3-extracting-data) but don't skip [info.py](#2-setting-up-infopy-file).  
 More info about [spatial database](https://postgis.net/).
 
 ### 1) Setup PostgreSQL/GIS
