@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Float, Time, create_engine, MetaData, Date, BigInteger # To work with PostgreSQL
+from sqlalchemy import Table, Column, Integer, String, Float, DateTime, create_engine, MetaData, BigInteger, Interval # To work with PostgreSQL
 from sqlalchemy_views import CreateView, DropView
 from sqlalchemy.sql import select
 from geoalchemy2 import Geometry
@@ -24,9 +24,10 @@ con, meta = connect(databaseUser, databasePW, databaseName, databaseServer, port
 
 """Create spatial, partials and summary table"""
 waypoints = Table('waypoints', meta,
+                  Column('id', Integer, primary_key = True),
                   Column('idGarmin', BigInteger, index = True),
                   Column('ele', Float),
-                  Column('time', Time),
+                  Column('time', DateTime),
                   Column('magvar', Float),
                   Column('geoidheight', Float),
                   Column('name', String),
@@ -53,6 +54,7 @@ waypoints = Table('waypoints', meta,
                   )
 
 routes = Table('routes', meta,
+               Column('id', Integer, primary_key = True),
                Column('idGarmin', BigInteger, index = True),
                Column('name', String),
                Column('cmt', String),
@@ -71,6 +73,7 @@ routes = Table('routes', meta,
                )
 
 tracks = Table('tracks', meta,
+               Column('id', Integer, primary_key = True),
                Column('idGarmin', BigInteger, index = True),
                Column('name', String),
                Column('cmt', String),
@@ -89,11 +92,12 @@ tracks = Table('tracks', meta,
                )
 
 route_points = Table('route_points', meta,
+                     Column('id', Integer, primary_key = True),
                      Column('idGarmin', BigInteger, index = True),
                      Column('routefid', String),
                      Column('route_point_id', String),
                      Column('ele', Float),
-                     Column('time', Time),
+                     Column('time', DateTime),
                      Column('magvar', Float),
                      Column('geoidheight', Float),
                      Column('name', String),
@@ -120,12 +124,13 @@ route_points = Table('route_points', meta,
                )
 
 track_points = Table('track_points', meta,
+                     Column('id', Integer, primary_key = True),
                      Column('idGarmin', BigInteger, index = True),
                      Column('track_fid', String),
                      Column('track_seg_id', String),
                      Column('track_seg_point_id', String),
                      Column('ele', String),
-                     Column('time', Date),
+                     Column('time', DateTime),
                      Column('magvar', String),
                      Column('geoidheight', String),
                      Column('name', String),
@@ -153,16 +158,16 @@ track_points = Table('track_points', meta,
 
 """Create partials and summery table"""
 partials = Table('partials', meta,
-                 Column('idGarmin', BigInteger, index = True),
+                 Column('idGarmin', BigInteger, index = True, primary_key = True),
                  Column('Split', Integer),
-                 Column('Time', Time()),
-                 Column('Moving Time', Time()),
+                 Column('Time', Interval),
+                 Column('Moving Time', Interval),
                  Column('Distance', Float(2), nullable = True),
                  Column('Elevation Gain', Integer),
                  Column('Elev Loss', Integer),
-                 Column('Avg Pace', Time()),  # TODO check if this could be interval instead of time
-                 Column('Avg Moving Paces', Time()),  # TODO check if this could be interval instead of time
-                 Column('Best Pace', Time()),  # TODO check if this could be interval instead of time
+                 Column('Avg Pace', Interval),
+                 Column('Avg Moving Paces', Interval),
+                 Column('Best Pace', Interval),
                  Column('Avg Run Cadence', Float(4)),
                  Column('Max Run Cadence', Float(2)),
                  Column('Avg Stride Length', Float(2), nullable = True),
@@ -173,16 +178,16 @@ partials = Table('partials', meta,
                  )
 
 summary = Table('summary', meta,
-                Column('idGarmin', BigInteger, index = True),
+                Column('idGarmin', BigInteger, index = True, primary_key = True),
                 Column('Split', String),
-                Column('Time', Time()),
-                Column('Moving Time', Time()),
+                Column('Time', Interval),
+                Column('Moving Time', Interval),
                 Column('Distance', Float(2), nullable = True),
                 Column('Elevation Gain', Integer),
                 Column('Elev Loss', Integer),
-                Column('Avg Pace', Time()), # TODO check if this could be interval instead of time
-                Column('Avg Moving Paces', Time()), # TODO check if this could be interval instead of time
-                Column('Best Pace', Time()), # TODO check if this could be interval instead of time
+                Column('Avg Pace', Interval),
+                Column('Avg Moving Paces', Interval),
+                Column('Best Pace', Interval),
                 Column('Avg Run Cadence', Float(4)),
                 Column('Max Run Cadence', Float(2)),
                 Column('Avg Stride Length', Float(2), nullable = True),
