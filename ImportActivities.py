@@ -4,6 +4,7 @@ import pandas as pd
 import geopandas as gpd
 import fiona
 from dbSetup import get_garmin_id, summary, partials, con, meta
+import datetime
 
 
 def gpx2pg(con, meta, inFolder, inFormat):
@@ -11,6 +12,11 @@ def gpx2pg(con, meta, inFolder, inFormat):
     def create_wkt_element(geom):
         """"function Use GeoAlchemy's WKTElement to create a geom with SRID"""
         return WKTElement(geom.wkt, srid=4326)
+
+    def to_timestamp(value):
+        """function to convert datetime to time timestamp"""
+        datetime_value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S").time()
+        return datetime_value
 
     # Identify file with pattern (format) in path (folder)
     fileList = glob.glob(os.path.join(inFolder, "*.{0}".format(inFormat)))
@@ -32,6 +38,12 @@ def gpx2pg(con, meta, inFolder, inFormat):
                     # Use GeoAlchemy's WKTElement to create a geom with SRID
                     data['geometry'] = data['geometry'].apply(create_wkt_element) # TODO insert WKTElement(geom.wkt, srid=4326) direct here instead of creating function?
                     data["idGarmin"] = idGarmin
+                    if l == "track_points":
+                        """if track points, the time (which holds date & time as string) will be converted to time with time stamp"""
+                        data["time2"] = data.time.apply(to_timestamp)
+                        data["time3"] = pd.to_datetime(data["time2"], format="%H:%M:%S")
+                        data['timediff'] = (data["time3"] - data["time3"].shift().fillna(pd.to_datetime("00:00:00", format="%H:%M:%S")))
+
                     # Converting to Dictionary to import several feature at once
                     dataDict = data.to_dict(orient='records')
                     # Executing insert statement
