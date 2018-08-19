@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Float, DateTime, create_engine, MetaData, BigInteger, Interval # To work with PostgreSQL
+from sqlalchemy import Table, Column, Integer, String, Float, DateTime, create_engine, MetaData, BigInteger, Interval, Time # To work with PostgreSQL
 from sqlalchemy_views import CreateView, DropView
 from sqlalchemy.sql import select
 from geoalchemy2 import Geometry
@@ -131,8 +131,8 @@ track_points = Table('track_points', meta,
                      Column('track_seg_point_id', String),
                      Column('ele', String),
                      Column('time', DateTime),
-                     Column('time2', Interval),
-                     Column('timediff', Interval),
+                     Column('time2', Time),
+                     Column('timediff', Time),
                      Column('magvar', String),
                      Column('geoidheight', String),
                      Column('name', String),
